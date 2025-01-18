@@ -8,7 +8,6 @@ interface Blog {
   img: string;
   author: string;
   date: string;
-  section: string;
 }
 
 const BlogCard = ({ title, excerpt, img, author, date }: Blog) => (

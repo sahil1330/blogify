@@ -29,23 +29,3 @@ export function connectToDatabase(): Db {
 
   return database;
 }
-
-// // You can define interfaces that describe the shape of your data.
-// // The VectorizeDoc interface adds a $vectorize key.
-// export interface Book extends VectorizeDoc {
-//   title: string;
-//   author: string;
-//   numberOfPages: number;
-//   rating: number;
-//   publicationYear: number;
-//   summary: string;
-//   genres: string[];
-//   metadata: {
-//     ISBN: string;
-//     language: string;
-//     edition: string;
-//   };
-//   isCheckedOut: boolean;
-//   borrower: string | null;
-//   dueDate: string | null;
-// }
