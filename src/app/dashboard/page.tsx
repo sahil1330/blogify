@@ -1,7 +1,11 @@
+import { BlogCard } from "@/components/blogCard"
+
 
 function page() {
   return (
-    <div>dashboard</div>
+    <div>
+       <BlogCard />
+    </div>
   )
 }
 
