@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 interface Blog {
   id: number;
@@ -28,13 +28,13 @@ const NavBar: React.FC = () => {
 };
 
 const BlogAnalysisTable: React.FC = () => {
-  const [blogs, setBlogs] = useState<Blog[]>([]);
-
-  useEffect(() => {
-    fetch('/api/blogs')
-      .then(res => res.json())
-      .then(data => setBlogs(data));
-  }, []);
+  const blogs: Blog[] = [
+    { id: 1, title: 'Understanding React Hooks', views: 1500, likes: 300 },
+    { id: 2, title: 'A Guide to Next.js', views: 2000, likes: 450 },
+    { id: 3, title: 'TailwindCSS Tips', views: 1800, likes: 400 },
+    { id: 4, title: 'State Management with Redux', views: 1200, likes: 250 },
+    { id: 5, title: 'TypeScript Basics', views: 1700, likes: 350 },
+  ];
 
   const handleEdit = (id: number) => {
     // Placeholder for edit functionality
@@ -53,7 +53,7 @@ const BlogAnalysisTable: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {blogs.map(blog => (
+          {blogs.map((blog) => (
             <tr key={blog.id} className="text-center">
               <td className="py-2 px-4 border">{blog.title}</td>
               <td className="py-2 px-4 border">{blog.views}</td>
