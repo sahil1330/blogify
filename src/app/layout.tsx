@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 import Navbar from "@/components/navbar";
 import { Toaster } from "@/components/ui/toaster"
@@ -27,15 +27,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body>
+
+    <html lang="en">
+      <body>
+        <ClerkProvider>
           <Navbar />
-          <main>{children}</main>
+          <main>
+            {children}
+          </main>
           <Toaster />
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
+
   );
 }

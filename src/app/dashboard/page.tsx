@@ -3,6 +3,12 @@ import { BlogCard } from "@/components/blogCard"
 import axios from "axios";
 import { useEffect, useState } from "react"
 import { useToast } from "@/hooks/use-toast"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 
 
 function Page() {
@@ -13,6 +19,7 @@ function Page() {
     tags: Array<string>;
     videoUrl: string;
     videoPublicId: string;
+    author: string;
     category: string;
     createdAt: Date;
     updatedAt: Date;
@@ -35,10 +42,21 @@ function Page() {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-800 mx-auto p-4">
       <h1 className="text-center text-4xl font-bold py-4">Explore</h1>
-      <div className="flex flex-wrap justify-around gap-4 w-6/6">
-        {blogs.map((blog) => (
-          <BlogCard key={blog._id} blog={blog} />
-        ))}
+      <div className="flex flex-wrap justify-around gap-8 w-6/6">
+        <Carousel
+          opts={{
+            align: "start",
+          }}
+          className="w-full max-w-6xl">
+          <CarouselContent className="-ml-1 md:-ml-4">
+            {blogs.map((blog) => (
+              <BlogCard key={blog._id} blog={blog} />
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+
       </div>
     </div>
   )

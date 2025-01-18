@@ -12,6 +12,7 @@ export async function POST(req: NextRequest) {
     const content = formData?.get("content");
     const tags = formData?.get("tags");
     const category = formData?.get("category");
+    const author = formData?.get("author");
     let uploadResult;
     try {
       uploadResult = await uploadToCloudinary(videoFile);
@@ -27,6 +28,7 @@ export async function POST(req: NextRequest) {
       content,
       tags,
       category,
+      author,
       videoUrl: uploadResult.secure_url,
       videoPublicId: uploadResult.public_id,
       createdAt: new Date(),

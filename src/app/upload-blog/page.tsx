@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-
 import blogFormSchema from "@/schema/blogFormSchema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -17,14 +16,21 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import axios from "axios";
 import { Loader2 } from "lucide-react"
+import { useAuth, useUser } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server"
+
+
+
 function Page() {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
+    // const user = getCurrentUser();
+    const { userId } = useAuth();
+    console.log(userId)
     const form = useForm<z.infer<typeof blogFormSchema>>({
         resolver: zodResolver(blogFormSchema),
         defaultValues: {
@@ -35,17 +41,24 @@ function Page() {
             category: "",
         },
     })
-
     async function onSubmit(values: z.infer<typeof blogFormSchema>) {
+        // const user = getCurrentUser();
+        // console.log(user)
+        // // console.log(userId)
         setIsSubmitting(true);
         try {
             const tags = values.tags.split(",");
             const formData = new FormData();
             formData.append("title", values.title);
-            formData.append("description", values.content);
-            formData.append("videoFile", values.videoFile ?? "");
+            formData.append("content", values.content);
+            if (values.videoFile) {
+                formData.append("videoFile", values.videoFile);
+            }
             formData.append("tags", JSON.stringify(tags));
             formData.append("category", values.category);
+            if (userId) {
+                formData.append("author", userId);
+            }
             const response = await axios.post("/api/upload-blog", formData);
             toast({
                 title: response.data.message,
