@@ -1,4 +1,4 @@
-import { DataAPIClient, Db } from "@datastax/astra-db-ts";
+import { DataAPIClient, Db, VectorizeDoc } from "@datastax/astra-db-ts";
 
 /**
  * Connects to a DataStax Astra database.
@@ -28,6 +28,16 @@ export function connectToDatabase(): Db {
   console.log(`Connected to database ${database.id}`);
 
   return database;
+}
+
+export interface blogs extends VectorizeDoc {
+    title: string;
+    content: string;
+    tags: Array<string>;
+    videoFile: string;
+    category: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 // // You can define interfaces that describe the shape of your data.

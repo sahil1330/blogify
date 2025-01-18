@@ -17,9 +17,10 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { useRef, useState } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import axios from "axios";
+import { Loader2 } from "lucide-react"
 function Page() {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -29,19 +30,23 @@ function Page() {
         defaultValues: {
             title: "",
             content: "",
-            tags: [],
+            tags: "",
             videoFile: undefined,
+            category: "",
         },
     })
 
     async function onSubmit(values: z.infer<typeof blogFormSchema>) {
         setIsSubmitting(true);
         try {
+            const tags = values.tags.split(",");
             const formData = new FormData();
             formData.append("title", values.title);
             formData.append("description", values.content);
             formData.append("videoFile", values.videoFile ?? "");
-            const response = await axios.post("/upload-blog", formData);
+            formData.append("tags", JSON.stringify(tags));
+            formData.append("category", values.category);
+            const response = await axios.post("/api/upload-blog", formData);
             toast({
                 title: response.data.message,
             });
@@ -60,8 +65,8 @@ function Page() {
     }
     const { toast } = useToast();
     return (
-        <div className="p-8 justify-center items-center text-blue-600 w-full">
-            <h1 className="text-center text-3xl text-blue-600">Upload Video</h1>
+        <div className="p-8 justify-center items-center  w-full">
+            <h1 className="text-center text-3xl ">Upload Blog</h1>
             <div className="flex items-center justify-center w-full">
                 <Form {...form} >
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-3/6">
@@ -72,7 +77,7 @@ function Page() {
                                 <FormItem>
                                     <FormLabel>Title</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="shadcn" {...field} />
+                                        <Input placeholder="Blog Title" {...field} value={field.value || ""} />
                                     </FormControl>
                                     <FormDescription>
                                         This is your public display name.
@@ -88,7 +93,7 @@ function Page() {
                                 <FormItem>
                                     <FormLabel>Content</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="shadcn" {...field} />
+                                        <Input placeholder="Blog Content" {...field} value={field.value || ""} />
                                     </FormControl>
                                     <FormDescription>
                                         This is your public display name.
@@ -117,7 +122,46 @@ function Page() {
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit">Submit</Button>
+                        <FormField
+                            control={form.control}
+                            name="tags"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Tags</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="shadcn" {...field} value={field.value || ""} />
+                                    </FormControl>
+                                    <FormDescription>
+                                        This is your public display name.
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="category"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Category</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Category" {...field} value={field.value || ""} />
+                                    </FormControl>
+                                    <FormDescription>
+                                        This is your public display name.
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        {isSubmitting ? (
+                            <Button type="submit" disabled>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Upload Blog
+                            </Button>
+                        ) : (
+                            <Button type="submit">Upload Blog</Button>
+                        )}
                     </form>
                 </Form>
             </div>

@@ -15,11 +15,11 @@ import Link from "next/link";
 
 function Navbar() {
     return (
-        <div className="flex w-full justify-between items-center p-4">
+        <div className="flex w-full justify-between items-center p-4 text-xl">
             <NavigationMenu>
                 <NavigationMenuList>
                     <NavigationMenuItem>
-                        <NavigationMenuTrigger className="text-xl">Item One</NavigationMenuTrigger>
+                        <NavigationMenuTrigger>Item One</NavigationMenuTrigger>
                         <NavigationMenuContent>
                             <NavigationMenuLink>Link</NavigationMenuLink>
                         </NavigationMenuContent>
@@ -28,6 +28,13 @@ function Navbar() {
                         <Link href="/dashboard" legacyBehavior passHref>
                             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                                 Home
+                            </NavigationMenuLink>
+                        </Link>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                        <Link href="/upload-blog" legacyBehavior passHref>
+                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                                Upload Blog
                             </NavigationMenuLink>
                         </Link>
                     </NavigationMenuItem>
