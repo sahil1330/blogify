@@ -5,9 +5,6 @@ import Image from "next/image";
 import React, { useCallback, useEffect, useState } from "react";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import { getCldImageUrl, getCldVideoUrl } from "next-cloudinary"
-import dayjs from "dayjs";
-import realtiveTime from "dayjs/plugin/relativeTime";
-import { filesize } from "filesize";
 import { CarouselItem } from "./ui/carousel";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -29,8 +26,6 @@ interface BlogCardProps {
 }
 
 export function BlogCard({ blog }: BlogCardProps) {
-    const [isHovered, setIsHovered] = useState(false);
-    const [previewError, setPreviewError] = useState(false);
     const { toast } = useToast();
     const getThumbnailUrl = useCallback((public_id: string) => {
         return getCldImageUrl({
@@ -44,39 +39,6 @@ export function BlogCard({ blog }: BlogCardProps) {
             assetType: "video",
         });
     }, []);
-    const getFullVideoUrl = useCallback((public_id: string) => {
-        return getCldVideoUrl({
-            src: public_id,
-            width: 1920,
-            height: 1080,
-        });
-    }, []);
-    const getPreviewVideoUrl = useCallback((public_id: string) => {
-        return getCldVideoUrl({
-            src: public_id,
-            width: 400,
-            height: 225,
-            rawTransformations: ["e_preview:duration_15:max_seg_9:min_seg_dur_1"],
-        });
-    }, []);
-
-    const formatSize = useCallback((size: number) => {
-        return filesize(size);
-    }, []);
-
-    const formatDuration = useCallback((seconds: number) => {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = Math.round(seconds % 60);
-        return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-    }, []);
-
-    useEffect(() => {
-        setPreviewError(false);
-    }, [isHovered]);
-
-    const handlePreviewError = () => {
-        setPreviewError(true);
-    };
 
     const handleDelete = async () => {
         await axios.delete(`/api/delete-blog/${blog._id}`).then((res) => {
