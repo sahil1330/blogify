@@ -2,13 +2,9 @@ import { connectToDatabase } from "@/dbConfig/connectDB";
 import { ObjectId } from "@datastax/astra-db-ts";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-): Promise<NextResponse> {
+export async function GET(req: NextRequest, {params}: {params: {id: string}}) {
   try {
     const { id } = await params;
-    console.log(id);
     // Connect to the database
     const db = connectToDatabase();
 
@@ -22,4 +18,7 @@ export async function GET(
       { status: 500 }
     );
   }
+
 }
+
+
