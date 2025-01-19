@@ -1,4 +1,5 @@
 import { connectToDatabase } from "@/dbConfig/connectDB";
+import { ObjectId } from "@datastax/astra-db-ts";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -13,7 +14,7 @@ export async function GET(
 
     // Find the blog with the given ID
     const collection = await db.collection("blogs");
-    const blog = await collection.findOne({ _id: id });
+    const blog = await collection.findOne({ _id: new ObjectId(id) });
     return NextResponse.json({ blog });
   } catch (error) {
     return NextResponse.json(
