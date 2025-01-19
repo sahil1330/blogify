@@ -22,7 +22,7 @@ function Page({ params }: { params: Promise<{ lang: string; id: string }> }) {
         // Fetch blog data based on slug
         const fetchBlog = async () => {
             try {
-                await axios.get(`/api/blog/${unwrappedParams.id}`).then(async (res) => {
+                await axios.get(`/api/blog?id=${unwrappedParams.id}`).then(async (res) => {
                     setBlog(res.data.blog);
                     if (res.data.blog) {
                         const transcriptionResponse = await axios.post('/api/transcribe', {

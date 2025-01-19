@@ -20,7 +20,7 @@ function Page({ params }: {
 
         (async () => {
             const { id } = await params;
-            await axios.get(`/api/blog/${id}`).then(async (res) => {
+            await axios.get(`/api/blog?id=${id}`).then(async (res) => {
                 setBlog(res.data.blog);
                 if (res.data.blog) {
                     const response = await axios.post('/api/transcribe', {

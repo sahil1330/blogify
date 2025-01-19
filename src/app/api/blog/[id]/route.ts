@@ -1,11 +1,14 @@
 import { connectToDatabase } from "@/dbConfig/connectDB";
 // import { ObjectId } from "@datastax/astra-db-ts";
-import { NextResponse } from "next/server";
-type Params = { id: string };
+import { NextRequest, NextResponse } from "next/server";
+// type Params = { id: string };
 
-export async function GET(params: Params) {
+export async function GET(request: NextRequest) {
   try {
-    const { id } = await params;
+    
+    // Get the ID from the URL  ;
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
     // Connect to the database
     const db = connectToDatabase();
 

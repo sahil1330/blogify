@@ -56,7 +56,7 @@ function Page({ params }: { params: { id: string } }) {
             const response = await axios.get('/api/user');
             userId.current = response.data;
             console.log(userId.current);
-            await axios.get(`/api/blog/${id}`).then(
+            await axios.get(`/api/blog?id=${id}`).then(
                 res => {
                     setBlog(res.data.blog);
                     form.setValue('title', res.data.blog.title);
