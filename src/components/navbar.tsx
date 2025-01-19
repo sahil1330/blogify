@@ -15,15 +15,9 @@ import Link from "next/link";
 
 function Navbar() {
     return (
-        <div className="flex w-full justify-between items-center p-4 text-xl">
+        <div className="flex w-full justify-center items-center p-4 text-xl">
             <NavigationMenu>
                 <NavigationMenuList>
-                    <NavigationMenuItem>
-                        <NavigationMenuTrigger>Item One</NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                            <NavigationMenuLink>Link</NavigationMenuLink>
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
                     <NavigationMenuItem>
                         <Link href="/dashboard" legacyBehavior passHref>
                             <NavigationMenuLink className={navigationMenuTriggerStyle()}>

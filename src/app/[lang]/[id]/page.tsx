@@ -22,32 +22,49 @@ function Page({ params }: { params: Promise<{ lang: string; id: string }> }) {
         // Fetch blog data based on slug
         const fetchBlog = async () => {
             try {
-                const response = await axios.get(`/api/blog/${unwrappedParams.id}`);
-                const blogData = response.data.blog;
-                setBlog(blogData);
+                await axios.get(`/api/blog/${unwrappedParams.id}`).then(async (res) => {
+                    setBlog(res.data.blog);
+                    if (res.data.blog) {
+                        const transcriptionResponse = await axios.post('/api/transcribe', {
+                            audioUrl: `https://res.cloudinary.com/dncd4kbqw/video/upload/${res.data.blog.videoPublicId}.mp3`
+                        })
+                        axios.post("/api/translate", {
+                            title: res.data.blog.title,
+                            content: res.data.blog.content,
+                            transcription: transcriptionResponse.data,
+                            lang: unwrappedParams.lang,
+                        }).then((res) => {
+                            setTranslated(res.data);
+                        }).catch((err) => {
+                            console.error(err);
+                        });
 
-                // Transcribe the video if it has a videoPublicId
-                if (blogData.videoPublicId) {
-                    const transcriptionResponse = await axios.post("/api/transcribe", {
-                        videoPublicId: blogData.videoPublicId,
-                    });
-                    blogData.transcription = transcriptionResponse.data.transcription;
-                }
-                // Translate title, content, and transcription
-                
-                const translation = await axios.post("/api/translate", {
-                    title: blogData.title,
-                    content: blogData.content,
-                    transcription: blogData.transcription || "",
-                    lang: unwrappedParams.lang,
+                    }
+                }).catch((err) => {
+                    console.error(err);
                 });
+                //     const response = await axios.get(`/api/blog/${unwrappedParams.id}`);
+                //     const blogData = response.data.blog;
+                //     setBlog(blogData);
 
-                setTranslated(translation.data);
+                //     // Translate title, content, and transcription
+
+                //     const translation = await axios.post("/api/translate", {
+                //         title: blogData.title,
+                //         content: blogData.content,
+                //         transcription: blogData.transcription || "",
+                //         lang: unwrappedParams.lang,
+                //     });
+
+                //     setTranslated(translation.data);
+                // } catch (error) {
+                //     console.error("Error fetching or translating blog:", error);
+                // }
+                // };
             } catch (error) {
                 console.error("Error fetching or translating blog:", error);
             }
         };
-
         fetchBlog();
     }, [unwrappedParams]);
     return (
@@ -66,20 +83,18 @@ function Page({ params }: { params: Promise<{ lang: string; id: string }> }) {
                             />
                         </div>
                         {/* <audio
-                        controls
-                        className="w-full mt-4"
-                        src={`https://res.cloudinary.com/dncd4kbqw/video/upload/${blog.videoPublicId}.mp3`}
-                    >
-                        Your browser does not support the audio element.
-                    </audio> */}
+                            controls
+                            className="w-full mt-4"
+                            src={`https://res.cloudinary.com/dncd4kbqw/video/upload/${blog.videoPublicId}.mp3`}
+                        >
+                            Your browser does not support the audio element.
+                        </audio> */}
                         <div className='mt-8 w-1/2 mx-auto'>
                             {
-                                !translated ? (
+                                !translated?.transcription ? (
                                     <div className='flex justify-center items-center'><Loader2 /></div>
                                 ) : (
-                                    <div className='text-lg my-8'>
-                                        {translated.transcription && <p>{translated.transcription}</p>}
-                                    </div>
+                                    <p className='text-lg my-8'>{translated.transcription}</p>
                                 )
                             }
                         </div>
@@ -125,7 +140,7 @@ function Page({ params }: { params: Promise<{ lang: string; id: string }> }) {
                             {blog && <Link href={`/en/${blog._id}`}>
                                 <Button>English</Button>
                             </Link>}
-                        
+
                         </div>
 
                     </div>
@@ -134,6 +149,7 @@ function Page({ params }: { params: Promise<{ lang: string; id: string }> }) {
 
 
         </Suspense>
+
     )
 }
 

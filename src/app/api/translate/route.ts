@@ -1,29 +1,33 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { NextResponse } from "next/server";
-import axios from "axios";
+const { Translate } = require("@google-cloud/translate").v2;
 
 export async function POST(req: Request) {
-  const body = await req.json();
-  const { title, content, transcription, lang } = body;
+  const translate = new Translate({
+    projectId: "your-google-cloud-project-id",
+    keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+  });
 
   try {
-    const translateText = async (text: string) => {
-      const response = await axios.post(
-        "https://translation.googleapis.com/language/translate/v2",
-        { q: text, target: lang },
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.GOOGLE_TRANSLATE_API_KEY}`,
-          },
-        }
-      );
-      return response.data.data.translations[0].translatedText;
-    };
+    const body = await req.json();
+    const { title, content, transcription, lang } = body;
 
-    const translatedTitle = await translateText(title);
-    const translatedContent = await translateText(content);
-    const translatedTranscription = transcription
-      ? await translateText(transcription)
-      : "";
+    // Validate input
+    if (!title || !content || !lang) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    const supportedLanguages = ["en", "hi", "kn", "or", "es", "fr", "de"];
+    if (!supportedLanguages.includes(lang)) {
+      return NextResponse.json({ error: `Unsupported language: ${lang}` }, { status: 400 });
+    }
+
+    // Perform translation
+    const [translatedTitle] = await translate.translate(title, lang);
+    const [translatedContent] = await translate.translate(content, lang);
+    const [translatedTranscription] = transcription
+      ? await translate.translate(transcription, lang)
+      : [""];
 
     return NextResponse.json({
       title: translatedTitle,
@@ -31,7 +35,7 @@ export async function POST(req: Request) {
       transcription: translatedTranscription,
     });
   } catch (error) {
-    console.error("Translation error:", error);
+    console.error("Translation error:", (error as Error).message);
     return NextResponse.json({ error: "Translation failed" }, { status: 500 });
   }
 }
