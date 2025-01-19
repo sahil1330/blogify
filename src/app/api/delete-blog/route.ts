@@ -1,11 +1,10 @@
 import { connectToDatabase } from "@/dbConfig/connectDB";
 import { NextRequest, NextResponse } from "next/server";
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest) {
   try {
-    const { id } = await params;
+    // Get the ID from the URL  ;
+    const searchParams = req.nextUrl.searchParams;
+    const id = searchParams.get("id");
     const db = await connectToDatabase();
     await db.collection("blogs").deleteOne({ _id: id });
     return NextResponse.json({ message: "Blog deleted successfully" });

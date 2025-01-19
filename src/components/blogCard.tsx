@@ -41,7 +41,7 @@ export function BlogCard({ blog }: BlogCardProps) {
     }, []);
 
     const handleDelete = async () => {
-        await axios.delete(`/api/delete-blog/${blog._id}`).then((res) => {
+        await axios.delete(`/api/delete-blog?id=${blog._id}`).then((res) => {
             console.log(res.data);
             toast({
                 title: res.data.message

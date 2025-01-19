@@ -3,11 +3,11 @@ import { connectToDatabase } from "@/dbConfig/connectDB";
 import { NextRequest, NextResponse } from "next/server";
 // type Params = { id: string };
 
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     
     // Get the ID from the URL  ;
-    const { searchParams } = new URL(request.url);
+    const  searchParams  = req.nextUrl.searchParams;
     const id = searchParams.get("id");
     // Connect to the database
     const db = connectToDatabase();

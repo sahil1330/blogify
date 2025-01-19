@@ -2,12 +2,10 @@ import { connectToDatabase } from "@/dbConfig/connectDB";
 import { uploadToCloudinary } from "@/lib/uploadToCloudnary";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: NextRequest) {
   try {
-    const { id } = await params;
+    const searchParams = req.nextUrl.searchParams;
+    const id = searchParams.get("id");
     const db = await connectToDatabase();
     const collection = db.collection("blogs");
     const formData = await req.formData();

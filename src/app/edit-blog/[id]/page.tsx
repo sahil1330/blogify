@@ -89,7 +89,7 @@ function Page({ params }: { params: { id: string } }) {
             if (userId) {
                 formData.append("author", userId.current || '');
             }
-            const response = await axios.post(`/api/edit-blog/${id}`, formData);
+            const response = await axios.post(`/api/edit-blog?id=${id}`, formData);
             toast({
                 title: response.data.message,
             });
