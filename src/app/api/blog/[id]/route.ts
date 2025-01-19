@@ -1,9 +1,9 @@
 import { connectToDatabase } from "@/dbConfig/connectDB";
 // import { ObjectId } from "@datastax/astra-db-ts";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 type Params = { id: string }
 
-export async function GET(req: NextRequest, { params }: { params: Params }) {
+export async function GET( { params }: { params: Params }) {
   try {
     const { id } = await params;
     // Connect to the database
