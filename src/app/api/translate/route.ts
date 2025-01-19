@@ -1,28 +1,37 @@
-// Creates a client
+import { NextResponse } from "next/server";
+import axios from "axios";
 
-import { NextRequest, NextResponse } from "next/server";
+export async function POST(req: Request) {
+  const body = await req.json();
+  const { title, content, transcription, lang } = body;
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { Translate } = require("@google-cloud/translate").v2;
+  try {
+    const translateText = async (text: string) => {
+      const response = await axios.post(
+        "https://translation.googleapis.com/language/translate/v2",
+        { q: text, target: lang },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.GOOGLE_TRANSLATE_API_KEY}`,
+          },
+        }
+      );
+      return response.data.data.translations[0].translatedText;
+    };
 
-/**
- * TODO(developer): Uncomment the following lines before running the sample.
- */
-// const text = 'The text to translate, e.g. Hello, world!';
-// const target = 'The target language, e.g. ru';
+    const translatedTitle = await translateText(title);
+    const translatedContent = await translateText(content);
+    const translatedTranscription = transcription
+      ? await translateText(transcription)
+      : "";
 
-export async function POST(req: NextRequest) {
-  const translate = new Translate();
-  // Translates the text into the target language. "text" can be a string for
-  // translating a single piece of text, or an array of strings for translating
-  // multiple texts.
-  const { text, target } = await req.json();
-  let [translations] = await translate.translate(text, target);
-  translations = Array.isArray(translations) ? translations : [translations];
-  console.log("Translations:");
-  translations.forEach((translation: string, i: number) => {
-    console.log(`${(text as string[])[i]} => (${target}) ${translation}`);
-  });
-
-  return NextResponse.json(translations);
+    return NextResponse.json({
+      title: translatedTitle,
+      content: translatedContent,
+      transcription: translatedTranscription,
+    });
+  } catch (error) {
+    console.error("Translation error:", error);
+    return NextResponse.json({ error: "Translation failed" }, { status: 500 });
+  }
 }

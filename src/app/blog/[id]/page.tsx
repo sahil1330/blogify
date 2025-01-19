@@ -5,8 +5,10 @@ import axios from 'axios';
 import React, { Suspense, useEffect } from 'react'
 import { CldVideoPlayer } from 'next-cloudinary';
 import 'next-cloudinary/dist/cld-video-player.css';
-import { Link, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 function Page({ params }: {
     params: Promise<{ id: string }>
@@ -75,17 +77,43 @@ function Page({ params }: {
                     <h2 className='text-3xl font-bold text-center'>See this post in other regional languages</h2>
                     <div className='flex gap-4'>
                         <div className='lang-card flex gap-4 justify-center items-center flex-wrap w-full my-4'>
-                            <Link href={`/blog/${blog?._id}/blog-title-marathi`}><Button>मराठी</Button></Link>
-                            <Link href={`/blog/${blog?._id}/blog-title-bengali`}><Button>বাংলা</Button></Link>
-                            <Link href={`/blog/${blog?._id}/blog-title-tamil`}><Button>தமிழ்</Button></Link>
-                            <Link href={`/blog/${blog?._id}/blog-title-telugu`}><Button>తెలుగు</Button></Link>
-                            <Link href={`/blog/${blog?._id}/blog-title-kannada`}><Button>ಕನ್ನಡ</Button></Link>
-                            <Link href={`/blog/${blog?._id}/blog-title-malayalam`}><Button>മലയാളം</Button></Link>
-                            <Link href={`/blog/${blog?._id}/blog-title-punjabi`}><Button>ਪੰਜਾਬੀ</Button></Link>
-                            <Link href={`/blog/${blog?._id}/blog-title-gujarati`}><Button>ગુજરાતી</Button></Link>
-                            <Link href={`/blog/${blog?._id}/blog-title-odia`}><Button>ଓଡ଼ିଆ</Button></Link>
-                            <Link href={`/blog/${blog?._id}/blog-title-urdu`}><Button>اردو</Button></Link>
-                            <Link href={`/blog/${blog?._id}/`}><Button>English</Button></Link>
+                            {blog && <Link href={`/hi/${blog._id}`}>
+                                <Button>हिन्दी</Button>
+                            </Link>}
+                            {blog && <Link href={`/mr/${blog._id}`}>
+                                <Button>मराठी</Button>
+                            </Link>}
+                            {blog && <Link href={`/bn/${blog._id}`}>
+                                <Button>বাংলা</Button>
+                            </Link>}
+                            {blog && <Link href={`/ta/${blog._id}`}>
+                                <Button>தமிழ்</Button>
+                            </Link>}
+                            {blog && <Link href={`/te/${blog._id}`}>
+                                <Button>తెలుగు</Button>
+                            </Link>}
+                            {blog && <Link href={`/kn/${blog._id}`}>
+                                <Button>ಕನ್ನಡ</Button>
+                            </Link>}
+                            {blog && <Link href={`/ml/${blog._id}`}>
+                                <Button>മലയാളം</Button>
+                            </Link>}
+                            {blog && <Link href={`/pa/${blog._id}`}>
+                                <Button>ਪੰਜਾਬੀ</Button>
+                            </Link>}
+                            {blog && <Link href={`/gu/${blog._id}`}>
+                                <Button>ગુજરાતી</Button>
+                            </Link>}
+                            {blog && <Link href={`/or/${blog._id}`}>
+                                <Button>ଓଡ଼ିଆ</Button>
+                            </Link>}
+                            {blog && <Link href={`/ur/${blog._id}`}>
+                                <Button>اردو</Button>
+                            </Link>}
+                            {blog && <Link href={`/en/${blog._id}`}>
+                                <Button>English</Button>
+                            </Link>}
+                           
                         </div>
 
                     </div>
