@@ -1,9 +1,9 @@
 import { connectToDatabase } from "@/dbConfig/connectDB";
 // import { ObjectId } from "@datastax/astra-db-ts";
 import { NextResponse } from "next/server";
-type Params = { id: string }
+type Params = { id: string };
 
-export async function GET( { params }: { params: Params }) {
+export async function GET(params: Params) {
   try {
     const { id } = await params;
     // Connect to the database
@@ -19,7 +19,4 @@ export async function GET( { params }: { params: Params }) {
       { status: 500 }
     );
   }
-
 }
-
-
