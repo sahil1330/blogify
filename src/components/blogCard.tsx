@@ -104,6 +104,26 @@ export function BlogCard({ blog }: BlogCardProps) {
                                 alt="thumbnail"
                             />
                         </CardItem>
+                        <div className="flex justify-between items-center mt-20">
+                            <Link href={`/edit-blog/${blog._id}`}>
+                                <CardItem
+                                    translateZ={20}
+                                    translateX={-40}
+                                    as="button"
+                                    className="px-4 py-2 rounded-xl text-xs font-normal dark:text-white"
+                                >
+                                    Edit Blog
+                                </CardItem>
+                            </Link>
+                            <CardItem
+                                translateZ={20}
+                                translateX={40}
+                                as="button"
+                                className="px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
+                            >
+                                Delete Blog
+                            </CardItem>
+                        </div>
                     </CardBody>
                 </CardContainer>
             </CarouselItem>

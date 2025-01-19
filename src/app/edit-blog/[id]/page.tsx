@@ -1,10 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
-import blogFormSchema from "@/schema/blogFormSchema"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
+"use client";
+import { Button } from "@/components/ui/button";
 import {
     Form,
     FormControl,
@@ -14,24 +10,24 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { useToast } from "@/hooks/use-toast"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import axios from "axios";
-import { Loader2 } from "lucide-react"
-import { useAuth, useUser } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server"
-import React from "react"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input";
+import { useToast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
+import blogFormSchema from '@/schema/blogFormSchema';
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+// import Link from 'next/link';
+import { useForm } from "react-hook-form";
+import { z } from 'zod';
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
-
-
-function Page() {
+function Page({ params }: { params: { id: string } }) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-    // const user = getCurrentUser();
+    const [blog, setBlog] = useState<any | null>(null);
     const userId = React.useRef<string | undefined>(undefined);
     const form = useForm<z.infer<typeof blogFormSchema>>({
         resolver: zodResolver(blogFormSchema),
@@ -43,15 +39,33 @@ function Page() {
             category: "",
         },
     })
+    useEffect(() => {
+
+        (async () => {
+            const { id } = params;
+            const response = await axios.get('/api/user');
+            userId.current = response.data;
+            console.log(userId.current);
+            await axios.get(`/api/blog/${id}`).then(
+                res => {
+                    setBlog(res.data.blog);
+                    form.setValue('title', res.data.blog.title);
+                    form.setValue('content', res.data.blog.content);
+                    form.setValue('tags', res.data.blog.tags.join(','));
+                    form.setValue('category', res.data.blog.category);
+                }
+            ).catch((err) => {
+                console.error(err);
+            }
+            )
+        })()
+    }, [form, params])
     async function onSubmit(values: z.infer<typeof blogFormSchema>) {
         // const user = getCurrentUser();
         // console.log(user)
         // // console.log(userId)
         setIsSubmitting(true);
         try {
-            axios.get("/api/user").then((res) => {
-                userId.current = res.data;
-            })
             const tags = values.tags.split(",");
             const formData = new FormData();
             formData.append("title", values.title);
@@ -61,10 +75,10 @@ function Page() {
             }
             formData.append("tags", JSON.stringify(tags));
             formData.append("category", values.category);
-            if (userId.current) {
-                formData.append("author", userId.current);
+            if (userId) {
+                formData.append("author", userId.current || '');
             }
-            const response = await axios.post("/api/upload-blog", formData);
+            const response = await axios.post("/api/edit-blog", formData);
             toast({
                 title: response.data.message,
             });
@@ -82,11 +96,13 @@ function Page() {
         }
     }
     const { toast } = useToast();
+
+
     return (
-        <div className="p-8 justify-center items-center  w-full">
-            <h1 className="text-center text-3xl ">Upload Blog</h1>
+        <div>
+            <h1 className='text-4xl font-bold text-center'>Edit Blog</h1>
             <div className="flex items-center justify-center w-full">
-                <Form {...form} >
+                {blog ? (<Form {...form} >
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-3/6">
                         <FormField
                             control={form.control}
@@ -181,7 +197,7 @@ function Page() {
                             <Button type="submit">Upload Blog</Button>
                         )}
                     </form>
-                </Form>
+                </Form>) : (<div className='flex justify-center items-center'><Loader2 className="animate-spin 4s" /></div>)}
             </div>
         </div>
     )
