@@ -34,7 +34,7 @@ const blogFormSchema = z.object({
         message: "File size must be less than 100MB.",
     }).optional(),
 });
-function Page({ params }: { params: { id: string } }) {
+function Page({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [blog, setBlog] = useState<any | null>(null);
