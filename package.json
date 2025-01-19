@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/nextjs": "^6.9.14",
     "@datastax/astra-db-ts": "^1.5.0",
+    "@google-cloud/translate": "^8.5.0",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-label": "^2.1.1",
     "@radix-ui/react-navigation-menu": "^1.2.3",

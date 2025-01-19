@@ -1,48 +1,43 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// import { useParams } from 'next/navigation';
 "use client";
-import axios from 'axios';
-import React, { Suspense, useEffect } from 'react'
-import { CldVideoPlayer } from 'next-cloudinary';
-import 'next-cloudinary/dist/cld-video-player.css';
-import { Link, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
-function Page({ params }: {
-    params: Promise<{ id: string }>
-}) {
-    // const [id, setId] = React.useState<string | null>(null);
-    const [blog, setBlog] = React.useState<any | null>(null);
-    const [transcriptionText, setTranscriptionText] = React.useState<string | null>(null);
+import React, { useEffect, useState, Suspense } from "react";
+import axios from "axios";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { CldVideoPlayer } from "next-cloudinary";
+import { Loader2 } from "lucide-react";
+function Page({ params }: { params: { lang: string; id: string } }) {
+    const [blog, setBlog] = useState<any | null>(null);
+    const [translated, setTranslated] = useState<{ title: string; content: string; transcription?: string } | null>(null);
     useEffect(() => {
+        // Fetch blog data based on slug
+        const fetchBlog = async () => {
+            try {
+                const response = await axios.get(`/api/blog?${params.id}`);
+                const blogData = response.data.blog;
+                setBlog(blogData);
+                // Translate title, content, and transcription
+                const translation = await axios.post("/api/translate", {
+                    title: blogData.title,
+                    content: blogData.content,
+                    transcription: blogData.transcription || "",
+                    lang: params.lang,
+                });
 
-        (async () => {
-            const { id } = await params;
-            await axios.get(`/api/blog/${id}`).then(async (res) => {
-                setBlog(res.data.blog);
-                if (res.data.blog) {
-                    const response = await axios.post('/api/transcribe', {
-                        audioUrl: `https://res.cloudinary.com/dncd4kbqw/video/upload/${res.data.blog.videoPublicId}.mp3`
-                    });
-                    setTranscriptionText(response.data);
-                    console.log(response.data);
-                }
-            }).catch((err) => {
-                console.error(err);
-            });
-            // const transcriptionText = response.data;
-        })()
+                setTranslated(translation.data);
+            } catch (error) {
+                console.error("Error fetching or translating blog:", error);
+            }
+        };
 
-
-    }, [params]);
-
-
-
+        fetchBlog();
+    }, [params.id, params.lang]);
     return (
         <Suspense fallback={<div>Loading...</div>} >
             <div className='container mx-auto p-4 md:w-5/6 w-full'>
-                <h1 className='text-center text-6xl my-4 font-bold italic'>{blog?.title}</h1>
-                <p className='text-2xl my-2'>{blog?.content}</p>
+                <h1 className='text-center text-6xl my-4 font-bold italic'>{translated?.title}</h1>
+                <p className='text-2xl my-2'>{translated?.content}</p>
                 {/* <p>{blog?.videoPublicId}</p> */}
                 {blog?.videoPublicId && (
                     <div className='w-full flex gap-4'>
@@ -54,18 +49,20 @@ function Page({ params }: {
                             />
                         </div>
                         {/* <audio
-                            controls
-                            className="w-full mt-4"
-                            src={`https://res.cloudinary.com/dncd4kbqw/video/upload/${blog.videoPublicId}.mp3`}
-                        >
-                            Your browser does not support the audio element.
-                        </audio> */}
+                        controls
+                        className="w-full mt-4"
+                        src={`https://res.cloudinary.com/dncd4kbqw/video/upload/${blog.videoPublicId}.mp3`}
+                    >
+                        Your browser does not support the audio element.
+                    </audio> */}
                         <div className='mt-8 w-1/2 mx-auto'>
                             {
-                                !transcriptionText ? (
+                                !translated ? (
                                     <div className='flex justify-center items-center'><Loader2 /></div>
                                 ) : (
-                                    <p className='text-lg my-8'>{transcriptionText}</p>
+                                    <div className='text-lg my-8'>
+                                        {translated.transcription && <p>{translated.transcription}</p>}
+                                    </div>
                                 )
                             }
                         </div>
@@ -94,8 +91,6 @@ function Page({ params }: {
 
 
         </Suspense>
-
-
     )
 }
 

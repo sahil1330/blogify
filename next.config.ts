@@ -5,6 +5,14 @@ const nextConfig: NextConfig = {
   images: {
     domains: ["res.cloudinary.com"],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/:id-:lang",
+        destination: "/blog?id=:slug&lang=:lang",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
