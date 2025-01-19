@@ -13,7 +13,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import blogFormSchema from '@/schema/blogFormSchema';
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -24,6 +23,17 @@ import { z } from 'zod';
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
+
+const blogFormSchema = z.object({
+    title: z.string().optional(),
+    content: z.string().optional(),
+    tags: z.string().optional(),
+    category: z.string().optional(),
+    author: z.string().optional(),
+    videoFile: z.instanceof(File).refine((file) => file.size < 100000000, {
+        message: "File size must be less than 100MB.",
+    }).optional(),
+});
 function Page({ params }: { params: { id: string } }) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -64,21 +74,22 @@ function Page({ params }: { params: { id: string } }) {
         // const user = getCurrentUser();
         // console.log(user)
         // // console.log(userId)
+        const { id } = await  params;
         setIsSubmitting(true);
         try {
-            const tags = values.tags.split(",");
+            const tags = (values.tags || "").split(",");
             const formData = new FormData();
-            formData.append("title", values.title);
-            formData.append("content", values.content);
+            formData.append("title", values.title || "");
+            formData.append("content", values.content || "");
             if (values.videoFile) {
                 formData.append("videoFile", values.videoFile);
             }
             formData.append("tags", JSON.stringify(tags));
-            formData.append("category", values.category);
+            formData.append("category", values.category || "");
             if (userId) {
                 formData.append("author", userId.current || '');
             }
-            const response = await axios.post("/api/edit-blog", formData);
+            const response = await axios.post(`/api/edit-blog/${id}`, formData);
             toast({
                 title: response.data.message,
             });
@@ -191,10 +202,10 @@ function Page({ params }: { params: { id: string } }) {
                         {isSubmitting ? (
                             <Button type="submit" disabled>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Upload Blog
+                                Edit Blog
                             </Button>
                         ) : (
-                            <Button type="submit">Upload Blog</Button>
+                            <Button type="submit">Edit Blog</Button>
                         )}
                     </form>
                 </Form>) : (<div className='flex justify-center items-center'><Loader2 className="animate-spin 4s" /></div>)}

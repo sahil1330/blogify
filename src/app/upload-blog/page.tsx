@@ -16,12 +16,10 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { useEffect, useState } from "react"
+import {  useState } from "react"
 import { useRouter } from "next/navigation"
 import axios from "axios";
 import { Loader2 } from "lucide-react"
-import { useAuth, useUser } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server"
 import React from "react"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"

@@ -2,8 +2,12 @@ import { connectToDatabase } from "@/dbConfig/connectDB";
 import { uploadToCloudinary } from "@/lib/uploadToCloudnary";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
+    const { id } = await params;
     const db = await connectToDatabase();
     const collection = db.collection("blogs");
     const formData = await req.formData();
@@ -12,7 +16,7 @@ export async function POST(req: NextRequest) {
     const content = formData?.get("content");
     const tags = formData?.get("tags");
     const category = formData?.get("category");
-    const author = formData?.get("author");
+    // const author = formData?.get("author");
     let uploadResult;
     try {
       uploadResult = await uploadToCloudinary(videoFile);
@@ -22,28 +26,39 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    console.log(
+      title + " ",
+      content + " ",
+      tags + " ",
+      category + " ",
+      uploadResult.secure_url + "",
+      uploadResult.public_id
+    );
 
-    const blog = await collection.insertOne({
-      title,
-      content,
-      tags,
-      category,
-      author,
-      videoUrl: uploadResult.secure_url,
-      videoPublicId: uploadResult.public_id,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    const blog = await collection.updateOne(
+      { _id: id },
+      {
+        $set: {
+          title,
+          content,
+          tags,
+          category,
+          videoUrl: uploadResult.secure_url,
+          videoPublicId: uploadResult.public_id,
+          updatedAt: new Date(),
+        },
+      }
+    );
 
     if (!blog) {
       return NextResponse.json(
-        { message: "Failed to upload blog" },
+        { message: "Failed to edit blog" },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { message: "Blog uploaded successfully", blog },
+      { message: "Blog edited successfully", blog },
       { status: 201 }
     );
   } catch (error) {
@@ -52,8 +67,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-export async function GET() {
-  return NextResponse.json({ message: "Method Not Allowed" }, { status: 405 });
 }
