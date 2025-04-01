@@ -34,12 +34,14 @@ const blogFormSchema = z.object({
         message: "File size must be less than 100MB.",
     }).optional(),
 });
-function Page({ params }: { params: { id: string } }) {
+
+function Page({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [blog, setBlog] = useState<any | null>(null);
     const userId = React.useRef<string | undefined>(undefined);
-    const { id } = params;
+    const [blogId, setBlogId] = useState<string>("");
+    
     const form = useForm<z.infer<typeof blogFormSchema>>({
         resolver: zodResolver(blogFormSchema),
         defaultValues: {
@@ -50,32 +52,32 @@ function Page({ params }: { params: { id: string } }) {
             category: "",
         },
     })
+    
     useEffect(() => {
-
         (async () => {
+            // Extract ID from params Promise
+            const { id } = await params;
+            setBlogId(id);
+            
             const response = await axios.get('/api/user');
             userId.current = response.data;
-            console.log(userId.current);
-            await axios.get(`/api/blog?id=${id}`).then(
-                res => {
-                    setBlog(res.data.blog);
-                    form.setValue('title', res.data.blog.title);
-                    form.setValue('content', res.data.blog.content);
-                    form.setValue('tags', res.data.blog.tags.join(','));
-                    form.setValue('category', res.data.blog.category);
-                }
-            ).catch((err) => {
+            
+            try {
+                const res = await axios.get(`/api/blog?id=${id}`);
+                setBlog(res.data.blog);
+                form.setValue('title', res.data.blog.title);
+                form.setValue('content', res.data.blog.content);
+                form.setValue('tags', res.data.blog.tags.join(','));
+                form.setValue('category', res.data.blog.category);
+            } catch (err) {
                 console.error(err);
             }
-            )
-        })()
-    }, [form, params])
+        })();
+    }, [params, form]);
+    
     async function onSubmit(values: z.infer<typeof blogFormSchema>) {
-        // const user = getCurrentUser();
-        // console.log(user)
-        // // console.log(userId)
-        const { id } = await  params;
         setIsSubmitting(true);
+        
         try {
             const tags = (values.tags || "").split(",");
             const formData = new FormData();
@@ -89,11 +91,12 @@ function Page({ params }: { params: { id: string } }) {
             if (userId) {
                 formData.append("author", userId.current || '');
             }
-            const response = await axios.post(`/api/edit-blog?id=${id}`, formData);
+            
+            const response = await axios.post(`/api/edit-blog?id=${blogId}`, formData);
             toast({
                 title: response.data.message,
             });
-            router.push('/')
+            router.push('/');
         } catch (error: any) {
             console.log(error);
             const errorMessage = error.response?.data?.message || error.message;
@@ -101,13 +104,12 @@ function Page({ params }: { params: { id: string } }) {
                 title: errorMessage,
                 variant: "destructive",
             });
-        }
-        finally {
+        } finally {
             setIsSubmitting(false);
         }
     }
+    
     const { toast } = useToast();
-
 
     return (
         <div>
