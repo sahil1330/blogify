@@ -39,6 +39,7 @@ function Page({ params }: { params: { id: string } }) {
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [blog, setBlog] = useState<any | null>(null);
     const userId = React.useRef<string | undefined>(undefined);
+    const { id } = params;
     const form = useForm<z.infer<typeof blogFormSchema>>({
         resolver: zodResolver(blogFormSchema),
         defaultValues: {
@@ -52,7 +53,6 @@ function Page({ params }: { params: { id: string } }) {
     useEffect(() => {
 
         (async () => {
-            const { id } = params;
             const response = await axios.get('/api/user');
             userId.current = response.data;
             console.log(userId.current);
