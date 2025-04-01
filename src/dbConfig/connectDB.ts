@@ -9,7 +9,7 @@ import { DataAPIClient, Db, VectorizeDoc } from "@datastax/astra-db-ts";
  * @throws Will throw an error if the environment variables
  * `ASTRA_DB_API_ENDPOINT` or `ASTRA_DB_APPLICATION_TOKEN` are not defined.
  */
-export function connectToDatabase(): Db {
+export async function connectToDatabase(): Promise<Db> {
   const { ASTRA_DB_API_ENDPOINT: endpoint, ASTRA_DB_APPLICATION_TOKEN: token } =
     process.env;
 

@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -95,9 +94,7 @@ function Page() {
                                     <FormControl>
                                         <Input placeholder="Blog Title" {...field} value={field.value || ""} />
                                     </FormControl>
-                                    <FormDescription>
-                                        This is your public display name.
-                                    </FormDescription>
+                                
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -111,9 +108,6 @@ function Page() {
                                         <Label htmlFor="message">Blog Content</Label>
                                         <Textarea placeholder="Enter your Blog Content here." {...field} value={field.value || ""} id="message" />
                                     </div>
-                                    <FormDescription>
-                                        This is your public display name.
-                                    </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -133,7 +127,6 @@ function Page() {
                                             }}
                                         />
                                     </FormControl>
-                                    <FormDescription></FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -145,11 +138,8 @@ function Page() {
                                 <FormItem>
                                     <FormLabel>Tags</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="shadcn" {...field} value={field.value || ""} />
+                                        <Input placeholder="Tags" {...field} value={field.value || ""} />
                                     </FormControl>
-                                    <FormDescription>
-                                        This is your public display name.
-                                    </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -163,9 +153,6 @@ function Page() {
                                     <FormControl>
                                         <Input placeholder="Category" {...field} value={field.value || ""} />
                                     </FormControl>
-                                    <FormDescription>
-                                        This is your public display name.
-                                    </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}

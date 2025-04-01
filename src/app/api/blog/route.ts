@@ -10,10 +10,10 @@ export async function GET(req: NextRequest) {
     const  searchParams  = req.nextUrl.searchParams;
     const id = searchParams.get("id");
     // Connect to the database
-    const db = connectToDatabase();
+    const db = await connectToDatabase();
 
     // Find the blog with the given ID
-    const collection = await db.collection("blogs");
+    const collection =  db.collection("blogs");
     const blog = await collection.findOne({ _id: id });
     return NextResponse.json({ blog });
   } catch (error) {
